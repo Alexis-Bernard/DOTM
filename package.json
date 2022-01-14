@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "jest": "^27.4.7",
+    "moment": "^2.29.1",
     "mongodb": "^4.3.0",
     "nodemon": "^2.0.15"
   },

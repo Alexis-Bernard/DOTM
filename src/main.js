@@ -27,7 +27,7 @@ async function start() {
             default:
                 if (args.length == 5) {
                     let res = await requests.appendTimeEntry('proj1', '2022-01-12', 15, 'desc #test', ['test'])
-
+                    // [ERROR] Time couldn't be parse.
                     if (res == true) {
                         console.log(insertSuccess)
                     }
@@ -42,5 +42,5 @@ async function start() {
     }
 }
 
-console.log(parser.stringParser("13"))
+console.log(parser.stringParser("2/5, 2pm-4pm"))
 //start()
