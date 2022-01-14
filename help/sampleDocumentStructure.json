@@ -1,0 +1,22 @@
+{
+    "name": "DOTM",
+    "timeEntries": [
+        {
+            "date": "2022-01-12",
+            "time": 30,
+            "desc": "Init #Init",
+            "tags": [
+                "Init"
+            ]
+        },
+        {
+            "date": "2022-01-13",
+            "time": 45,
+            "desc": "Fix typo #Fix #Small",
+            "tags": [
+                "Fix",
+                "Small"
+            ]
+        }
+    ]
+}

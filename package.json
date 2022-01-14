@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "jest": "^27.4.7",
+    "mongodb": "^4.3.0",
+    "nodemon": "^2.0.15"
+  },
+  "name": "dotm",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "nodemon src/main.js test",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
