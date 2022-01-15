@@ -6,11 +6,11 @@
 
 
 [DATE]
-/^([a-zA-Z]*),? (\d+),? (.+)$/
+/^((?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*),? (\d+),?(?: (.+))?$/i
 Oct 21, .5				30 minutes on October 21
 December 12 2h		    2 hours on December 12
 
-/^([a-zA-Z]*),? (.+)$/
+/^((?:y|yesterday|mon|tue|wed|thu|fri|sat|sun)[a-z]*),?(?: (.+))?$/i
 y 2h					2 hours for yesterday
 y 15					15 minutes on yesterday's date
 yesterday 14			15 minutes on yesterday's date
@@ -18,7 +18,7 @@ Thurs 4				    4 hours on the most recent Thursday
 Thurs, 2:45				2 hours, 45 minutes on the most recent Thursday
 Friday .99				1 hours on most recent Friday
 
-/^(\d+)\/(\d+)(?:\/(\d+)?)?,? (.+)$/
+/^(\d+)\/(\d+)(?:\/(\d+)?)?,?(?: (.+))?$/
 2/5, 2pm-4pm			2 hours on February 5
 1/1/2017, 2h13m			2 hours, 15 minutes on January 1, 2017
 

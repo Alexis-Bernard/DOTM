@@ -396,3 +396,65 @@ test('"1/1/2017, 2h13m" gives last Thursday and 135', () => {
         135
     );
 });
+
+test('"Working on my #homework #mongodb" gives "homework" and "mongodb"', () => {
+    res = parser.descriptionParser(
+        "Working on my #homework #mongodb"
+    )
+
+    expect(res[0]).toBe(
+        "#homework"
+    );
+
+    expect(res[1]).toBe(
+        "#mongodb"
+    );
+});
+
+test('"12/01/2021" gives Dec. 1 of 2021 and null', () => {
+    res = parser.stringParser(
+        "12/01/2021"
+    )
+
+    expect(res["date"]).toBe(
+        "12-01-2021"
+    );
+
+    expect(res["time"]).toBe(
+        null
+    );
+});
+
+test('"Mon" gives last Monday and null', () => {
+    res = parser.stringParser(
+        "Mon"
+    )
+
+    expect(res["date"]).toBe(
+        moment().day("Mon").format('MM-DD-YYYY')
+    );
+
+    expect(res["time"]).toBe(
+        null
+    );
+});
+
+test('"Sep 20" gives last Sep. 21 and null', () => {
+    var date = moment().month("Sep").set("date", 20)
+
+    if (date > moment()) {
+        date.subtract(1, "year")
+    }
+
+    res = parser.stringParser(
+        "Sep 20"
+    )
+
+    expect(res["date"]).toBe(
+        date.format('MM-DD-YYYY')
+    );
+
+    expect(res["time"]).toBe(
+        null
+    );
+});

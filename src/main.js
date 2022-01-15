@@ -42,5 +42,6 @@ async function start() {
     }
 }
 
-console.log(parser.stringParser("2/5, 2pm-4pm"))
+console.log(parser.stringParser("y 12"))
+
 //start()
