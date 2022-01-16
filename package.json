@@ -9,7 +9,7 @@
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
-    "start": "nodemon src/main.js test",
+    "start": "nodemon src/main.js",
     "test": "jest"
   },
   "author": "",

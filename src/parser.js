@@ -1,5 +1,13 @@
 const moment = require('moment');
 
+/**
+ * Parse date and time of a string.
+ * If a time is found but no date, return today's date.
+ *
+ * @param {string} str The stirng to parse.
+ * 
+ * @return {object} Object with date (MM-DD-YYYY) and time (in minutes) fields.
+ */
 function stringParser(str) {
     try {
         let time = null
@@ -105,30 +113,40 @@ function stringParser(str) {
             }
         }
 
-        if (date == null) {
-            date = moment()
+        if (time != null && time > 0) {
+            // Time rounding
+            time = Math.ceil(time / 15) * 15;
+
+            if (date == null) {
+                date = moment()
+            }
+        }
+        else if (date == null) {
+            throw "Date and time couldn't be parsed."
         }
 
         date = date.format('MM-DD-YYYY')
 
-        // Round time
-        if (time != null) {
-            time = Math.ceil(time / 15) * 15;
-        }
-        
         return {
             "date": date,
             "time": time
         }
     }
     catch (error) {
-        console.log(error)
-        return null
+        throw error
     }
 }
 
+/**
+ * Parse tags of a string.
+ * If no tags found, return empty array.
+ *
+ * @param {string} str The description to parse.
+ * 
+ * @return {Array<string>} Tag list.
+ */
 function descriptionParser(str) {
-    return str ? str.match(/#[\w]+/g) : null
+    return str ? str.match(/#[\w]+/g) : []
 }
 
 module.exports = {

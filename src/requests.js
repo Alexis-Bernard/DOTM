@@ -3,54 +3,210 @@ const { MongoClient } = require("mongodb");
 // Error messages
 requestFailed = '[ERROR] Request failed.'
 
+/**
+ * Insert time entry in database.
+ *
+ * @param {string} projectName The project name.
+ * @param {Date} date The date object.
+ * @param {number} time The time in minutes.
+ * @param {string} description The description.
+ * @param {Array<string>} tags The tag list.
+ */
 async function appendTimeEntry(projectName, date, time, description, tags) {
     try {
         client = await connect()
 
         if (client != null) {
-            collection = client.db('dotm').collection('projects')
+            collection = client.db('dotm').collection('timeEntries')
 
-            if (collection != null) {
-                const query = { name: projectName };
-                const update = {
-                    $push: {
-                        timeEntries: {
-                            "date": date,
-                            "time": time,
-                            "desc": description,
-                            "tags": tags
-                        }
-                    }
-                };
-                const options = { upsert: true };
+            const document = {
+                "name": projectName,
+                "date": date,
+                "time": time,
+                "desc": description,
+                "tags": tags
+            };
 
-                let res = await collection.updateOne(query, update, options);
+            let res = await collection.insertOne(document);
 
-                if (res == null || res.modifiedCount == 0) {
-                    console.log(requestFailed)
-                    return false
-                }
-            }
-            else {
-                return false
+            if (res == null) {
+                throw "Entry insert failed."
             }
         }
     }
     catch (error) {
-        console.log(error)
-
-        return false
+        throw error
     }
     finally {
         disconnect(client)
     }
-
-    return true
 }
 
+/**
+ * Get total time passed a day for all or a specific project.
+ *
+ * @param {Date} date The date object.
+ * @param {string} projectName The project name.
+ * 
+ * @return {Array<object>} Array of time per project.
+ */
+async function getTimeByDate(date, projectName = null) {
+    try {
+        let client = await connect()
+
+        if (client != null) {
+            let query
+
+            if (projectName != null) {
+                query = {
+                    '$match': {
+                        'name': projectName,
+                        'date': date
+                    }
+                }
+            }
+            else {
+                query = {
+                    '$match': {
+                        'date': date
+                    }
+                }
+            }
+
+            let group = {
+                '$group': {
+                    '_id': { name: '$name', date: '$date' },
+                    'total': {
+                        '$sum': '$time'
+                    }
+                }
+            };
+
+            let collection = client.db('dotm').collection('timeEntries')
+
+            let res = await collection
+                .aggregate([query, group]);
+
+            return await res.toArray()
+        }
+    }
+    catch (error) {
+        throw error
+    }
+    finally {
+        disconnect(client)
+    }
+}
+
+/**
+ * Get total time passed a day for all or a specific project.
+ *
+ * @param {string} tag The tag searched.
+ * @param {string} projectName The project name.
+ * 
+ * @return {Array<object>} Array of time per project.
+ */
+async function getTimeByTag(tag, projectName = null) {
+    try {
+        let client = await connect()
+
+        if (client != null) {
+            let query
+
+            if (projectName != null) {
+                query = {
+                    '$match': {
+                        'name': projectName,
+                        'tags': tag
+                    }
+                }
+            }
+            else {
+                query = {
+                    '$match': {
+                        'tags': tag
+                    }
+                }
+            }
+
+            let group = {
+                '$group': {
+                    '_id': { name: '$name', tags: '$tags' },
+                    'total': {
+                        '$sum': '$time'
+                    }
+                }
+            };
+
+            let collection = client.db('dotm').collection('timeEntries')
+
+            let res = await collection
+                .aggregate([query, group]);
+
+            return await res.toArray()
+        }
+    }
+    catch (error) {
+        throw error
+    }
+    finally {
+        disconnect(client)
+    }
+}
+
+/**
+ * Get total time passed a day for all or a specific project.
+ *
+ * @param {string} tag The tag searched.
+ * @param {string} projectName The project name.
+ * 
+ * @return {Array<object>} Array of time per project.
+ */
+async function getTimeByProject(projectName) {
+    try {
+        let client = await connect()
+
+        if (client != null) {
+            let query
+
+            query = {
+                '$match': {
+                    'name': projectName
+                }
+            }
+
+            let group = {
+                '$group': {
+                    '_id': { name: '$name', date: '$date' },
+                    'total': {
+                        '$sum': '$time'
+                    }
+                }
+            };
+
+            let collection = client.db('dotm').collection('timeEntries')
+
+            let res = await collection
+                .aggregate([query, group]);
+
+            return await res.toArray()
+        }
+    }
+    catch (error) {
+        throw error
+    }
+    finally {
+        disconnect(client)
+    }
+}
+
+/**
+ * Connect to database.
+ *
+ * @return {object} Database connexion.
+ */
 async function connect() {
-    client = new MongoClient(
-        "mongodb://root:root@162.38.112.132:27017?retryWrites=true&w=majority&authSource=admin");
+    client = new MongoClient(process.env.MONGODB_CONN_STRING);
 
     try {
         // Connect the client to the server
@@ -62,16 +218,22 @@ async function connect() {
         return client
     }
     catch (error) {
-        console.log(error)
-
-        return null
+        throw error
     }
 }
 
+/**
+ * Disconnect to database.
+ *
+ * @param {object} client Database connexion.
+ */
 async function disconnect(client) {
     await client.close();
 }
 
 module.exports = {
-    appendTimeEntry
+    appendTimeEntry,
+    getTimeByDate,
+    getTimeByTag,
+    getTimeByProject
 }
